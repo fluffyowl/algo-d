@@ -1,7 +1,6 @@
 class PersistentUnionFind {
     import std.algorithm;
     import std.range;
-    import std.container;
     import std.conv;
 
     int[][] rank;

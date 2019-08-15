@@ -1,4 +1,9 @@
 class MinCostFlow {
+    import std.typecons;
+    import std.container;
+    import std.conv;
+    import std.algorithm;
+
     alias Tuple!(int, "to", int, "cap", int, "cost", int, "rev") Edge;
     immutable int INF = 1 << 29;
 
@@ -25,10 +30,10 @@ class MinCostFlow {
 
     int run(int s, int t, int f) { // source, sink, flow
         int res = 0;
-        h.fill(0);
+        h[] = 0;
         while (f > 0) {
             auto pq = new BinaryHeap!(Array!(Tuple!(int, int)), "a[0] < b[0]");
-            dist.fill(INF);
+            dist[] = INF;
             dist[s] = 0;
             pq.insert(tuple(0, s));
             while (!pq.empty) {
