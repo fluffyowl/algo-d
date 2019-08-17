@@ -1,8 +1,8 @@
 class MinCostFlow {
-    import std.typecons;
-    import std.container;
-    import std.conv;
-    import std.algorithm;
+    import std.typecons : Tuple, tuple;
+    import std.container : BinaryHeap, Array;
+    import std.conv : to;
+    import std.algorithm : min;
 
     alias Tuple!(int, "to", int, "cap", int, "cost", int, "rev") Edge;
     immutable int INF = 1 << 29;
