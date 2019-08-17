@@ -19,9 +19,6 @@ before_install:
 script:
     - python3 test_runner.py
 
-deploy:
-    - skip-cleanup: true
-
 branches:
     only:
         - master
