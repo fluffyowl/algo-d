@@ -1,0 +1,1 @@
+[![Build Status](https://travis-ci.org/fluffyowl/algo-d.svg?branch=master)](https://travis-ci.org/fluffyowl/algo-d)
