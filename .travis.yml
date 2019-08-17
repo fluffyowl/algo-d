@@ -1,11 +1,10 @@
-branches:
-    only:
-        - master
-
 language: d
+
 compiler:
     - dmd
+
 dist: xenial
+
 addons:
     apt:
         packages:
@@ -16,7 +15,17 @@ addons:
 before_install:
     - pip3 install -U setuptools
     - pip3 install -U online-judge-tools=='6.*'
+
 script:
     - python3 test_runner.py
+
 deploy:
     - skip-cleanup: true
+
+branches:
+    only:
+        - master
+
+cache:
+    directories:
+        - test_cases_cache
