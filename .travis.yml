@@ -14,3 +14,5 @@ before_install:
     - pip3 install -U online-judge-tools=='6.*'
 script:
     - python3 test_runner.py
+deploy:
+    - skip-cleanup: true
