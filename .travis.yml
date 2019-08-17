@@ -1,0 +1,16 @@
+language: d
+compiler:
+    - dmd
+dist: xenial
+addons:
+    apt:
+        packages:
+            - python3
+            - python3-pip
+            - python3-setuptools
+
+before_install:
+    - pip3 install -U setuptools
+    - pip3 install -U online-judge-tools=='6.*'
+script:
+    - python3 test_runner.py
