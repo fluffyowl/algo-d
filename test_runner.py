@@ -2,6 +2,7 @@
 
 import os
 import subprocess
+import sys
 import tempfile
 
 TEST_CASES_DIR = "test_cases_cache"
@@ -24,10 +25,19 @@ class TestRunner:
         with tempfile.TemporaryDirectory(prefix='tmp-') as working_dir:
             source_path = os.path.join(working_dir, "tmp.d")
             binary_path = os.path.join(working_dir, "tmp.out")
+
             self.generate_source_file(source_path)
-            self.compile_source_file(source_path, binary_path)
-            self.download_test_cases()
-            self.run_tests(binary_path)
+
+            result = self.compile_source_file(source_path, binary_path)
+            if not result.passed:
+                return result
+
+            result = self.download_test_cases()
+            if not result.passed:
+                return reslut
+
+            result = self.run_tests(binary_path)
+            return result
 
     def get_problem_url(self, test_path):
         with open(test_path, 'r') as test_file:
@@ -59,34 +69,72 @@ class TestRunner:
 
     def compile_source_file(self, source_path, binary_path):
         compile_command = COMPILER_COMMAND + ["-of"+binary_path, source_path]
-        subprocess.call(compile_command)
+        code = subprocess.call(compile_command)
+        if code == 0:
+            return Result(True)
+        else:
+            return Result(False, 'Failed to compile the source file.')
 
     def download_test_cases(self):
         if os.path.exists(self.test_cases_path) and len(os.listdir(self.test_cases_path)) != 0:
             print("Test cases already exist. Skip downloading.")
-            return
+            return Result(True)
+
         if not os.path.exists(self.test_cases_path):
             os.mkdir(self.test_cases_path)
+
         download_command = OJ_DOWNLOAD_COMMAND + ["--system", self.problem_url, "-d", self.test_cases_path]
-        subprocess.call(download_command)
+        code = subprocess.call(download_command) == 0
+        if code == 0:
+            return Result(True)
+        else:
+            return Result(False, 'Failed to download the test cases.')
 
     def run_tests(self, binary_path):
         execute_command = OJ_EXECUTE_COMMAND + ["--c", binary_path, "-d", self.test_cases_path]
-        subprocess.call(execute_command)
+        code = subprocess.call(execute_command)
+        if code == 0:
+            return Result(True)
+        else:
+            return Result(False, "Didn't pass the judge.")
 
+
+class Result:
+    def __init__(self, passed, failure_reason=''):
+        self.passed = passed
+        self.failure_reason = failure_reason
+
+
+def print_results(results):
+    print("\nOverall results:")
+    for test_name, result in sorted(results.items()):
+        if result.passed:
+            verdict = "\033[92mPASSED\033[0m"
+        else:
+            verdict = "\033[91mFAILED\033[0m"
+            verdict += " (" + result.failure_reason + ")"
+        print(test_name, "......", verdict)
 
 def run_specific_test(test_path):
     test_runner = TestRunner(test_path)
-    test_runner.run()
+    return test_runner.run()
 
 def run_all_tests():
+    results = {}
+    all_passed = True
     for test_path in os.listdir('test/'):
         if not test_path.endswith('.d'):
             continue
-        run_specific_test(os.path.join('test', test_path))
+        result = run_specific_test(os.path.join('test', test_path))
+        results[test_path] = result
+        all_passed &= result.passed
+    print_results(results)
+    return all_passed
 
 def main():
-    run_all_tests()
+    all_passed = run_all_tests()
+    if not all_passed:
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()
