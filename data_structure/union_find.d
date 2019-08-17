@@ -1,12 +1,12 @@
 class UnionFind {
-    import std.algorithm;
+    import std.algorithm : swap;
 
-    int N;
+    int n;
     int[] table;
 
     this(int n) {
-        N = n;
-        table = new int[](N);
+        this.n = n;
+        table = new int[](n);
         table[] = -1;
     }
 
@@ -21,5 +21,9 @@ class UnionFind {
         if (table[x] > table[y]) swap(x, y);
         table[x] += table[y];
         table[y] = x;
+    }
+
+    bool same(int x, int y) {
+        return find(x) == find(y);
     }
 }
