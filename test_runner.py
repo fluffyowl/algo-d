@@ -115,24 +115,29 @@ def print_results(results):
             verdict += " (" + result.failure_reason + ")"
         print(test_name, "......", verdict)
 
-def run_specific_test(test_path):
+def run(test_path):
     test_runner = TestRunner(test_path)
     return test_runner.run()
 
-def run_all_tests():
+def run_tests(test_paths):
     results = {}
     all_passed = True
-    for test_path in os.listdir('test/'):
+    for test_path in test_paths:
         if not test_path.endswith('.d'):
             continue
-        result = run_specific_test(os.path.join('test', test_path))
+        result = run(test_path)
         results[test_path] = result
         all_passed &= result.passed
     print_results(results)
     return all_passed
 
 def main():
-    all_passed = run_all_tests()
+    if len(sys.argv) == 1:
+        test_paths = [os.path.join('test', filename) for filename in os.listdir('test')]
+    else:
+        test_paths = sys.argv[1:]
+
+    all_passed = run_tests(test_paths)
     if not all_passed:
         sys.exit(1)
 
