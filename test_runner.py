@@ -34,7 +34,7 @@ class TestRunner:
 
             result = self.download_test_cases()
             if not result.passed:
-                return reslut
+                return result
 
             result = self.run_tests(binary_path)
             return result
@@ -84,7 +84,7 @@ class TestRunner:
             os.mkdir(self.test_cases_path)
 
         download_command = OJ_DOWNLOAD_COMMAND + ["--system", self.problem_url, "-d", self.test_cases_path]
-        code = subprocess.call(download_command) == 0
+        code = subprocess.call(download_command)
         if code == 0:
             return Result(True)
         else:
