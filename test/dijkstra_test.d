@@ -11,15 +11,15 @@ void main() {
     auto v = s[0];
     auto e = s[1];
     auto r = s[2];
-    auto dk = new DirectedDijkstra!(long, 1L<<59)(v);
+    auto g = new Edge!(long)[][](v);
     foreach (_; 0..e) {
         s = readln.split.map!(to!int);
         auto x = s[0];
         auto y = s[1];
         auto cost = s[2];
-        dk.add_edge(x, y, cost);
+        g[x] ~= Edge!(long)(y, cost);
     }
 
-    auto dist = dk.run(r);
+    auto dist = dijkstra!(long, 1L<<59)(g, r);
     v.iota.map!(i => dist[i] == 1L<<59 ? "INF" : to!string(dist[i])).each!writeln;
 }
