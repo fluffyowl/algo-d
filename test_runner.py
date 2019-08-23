@@ -4,6 +4,7 @@ import os
 import subprocess
 import sys
 import tempfile
+import util
 
 TEST_CASES_DIR = "test_cases_cache"
 OJ_DOWNLOAD_COMMAND = ["oj", "download"]
@@ -16,7 +17,6 @@ class TestRunner:
         self.problem_url = self.get_problem_url(test_path)
         self.problem_id = self.get_problem_id(self.problem_url)
         self.test_cases_path = os.path.join(TEST_CASES_DIR, self.problem_id)
-        self.required_library_paths = self.get_required_library_paths(test_path)
 
         if not os.path.exists(TEST_CASES_DIR):
             os.mkdir(TEST_CASES_DIR)
@@ -48,24 +48,11 @@ class TestRunner:
     def get_problem_id(self, problem_url):
         return problem_url.split("?id=")[-1]
 
-    def get_required_library_paths(self, test_path):
-        required_library_paths = []
-        with open(test_path, 'r') as test_file:
-            for line in test_file:
-                if line.startswith("//") and "require:" in line:
-                    required_library_paths.append(line.rstrip().split()[-1])
-        return required_library_paths
-
     def generate_source_file(self, source_path):
         with open(source_path, 'w') as source_file:
             with open(self.test_path) as test_file:
-                for line in test_file:
-                    source_file.write(line)
-            for library_path in self.required_library_paths:
-                source_file.write('\n')
-                with open(library_path) as library_file:
-                    for line in library_file:
-                        source_file.write(line)
+                source_file.write(test_file.read())
+            source_file.write(util.generate_required_content(self.test_path))
 
     def compile_source_file(self, source_path, binary_path):
         compile_command = COMPILER_COMMAND + ["-of"+binary_path, source_path]
@@ -114,6 +101,13 @@ def print_results(results):
             verdict = "\033[91mFAILED\033[0m"
             verdict += " (" + result.failure_reason + ")"
         print(test_name, "......", verdict)
+
+    unverified_sources = util.get_unverified_sources()
+    if len(unverified_sources) != 0:
+        print("\n\033[93mUnverified sources detected.\033[0m")
+        for src in unverified_sources:
+            print(" - " + src)
+        print()
 
 def run(test_path):
     test_runner = TestRunner(test_path)
