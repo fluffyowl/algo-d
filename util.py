@@ -24,7 +24,7 @@ def get_required_sources(src_path: str) -> List[str]:
     return list(required_sources)
 
 
-def get_unverified_sources() -> Set[str]:
+def get_unverified_sources() -> List[str]:
     all_sources = []
     unverified_sources = []
 
