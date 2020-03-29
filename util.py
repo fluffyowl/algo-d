@@ -26,7 +26,7 @@ def get_required_sources(src_path: str) -> List[str]:
 
 def get_unverified_sources() -> List[str]:
     all_sources = []
-    unverified_sources = []
+    verified_sources = []
 
     for directory in LIBRARY_DIRS:
         for source in os.listdir(directory):
@@ -37,16 +37,16 @@ def get_unverified_sources() -> List[str]:
     for test in os.listdir(TEST_DIR):
         if test.endswith(".d"):
             test = os.path.join(TEST_DIR, test)
-            unverified_sources += get_required_sources(test)
+            verified_sources += get_required_sources(test)
 
-    return list(set(all_sources) - set(unverified_sources))
+    return list(set(all_sources) - set(verified_sources))
 
 
 def generate_required_content(src_path: str) -> str:
     required_sources = get_required_sources(src_path)
     content = ""
     for source in required_sources:
-        with open(source, "r") as f:
+        with open(source, "r", encoding="utf-8") as f:
             content += f.read()
         content += "\n"
     return content
