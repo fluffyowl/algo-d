@@ -10,7 +10,7 @@ def get_required_sources(src_path: str) -> List[str]:
     required_sources = set()
 
     def dfs(src_path: str) -> None:
-        with open(src_path, "r") as src_file:
+        with open(src_path, "r", encoding="utf-8") as src_file:
             for line in src_file:
                 if not line.startswith("//") or "require:" not in line:
                     continue

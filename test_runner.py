@@ -40,7 +40,7 @@ class TestRunner:
             return result
 
     def get_problem_url(self, test_path):
-        with open(test_path, 'r') as test_file:
+        with open(test_path, 'r', encoding="utf-8") as test_file:
             for line in test_file:
                 if line.startswith("//") and "problem:" in line:
                     return line.rstrip().split()[-1]
