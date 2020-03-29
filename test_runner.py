@@ -49,8 +49,8 @@ class TestRunner:
         return problem_url.split("?id=")[-1]
 
     def generate_source_file(self, source_path):
-        with open(source_path, 'w') as source_file:
-            with open(self.test_path) as test_file:
+        with open(source_path, 'w', encoding='utf-8') as source_file:
+            with open(self.test_path, 'r', encoding='utf-8') as test_file:
                 source_file.write(test_file.read())
             source_file.write(util.generate_required_content(self.test_path))
 

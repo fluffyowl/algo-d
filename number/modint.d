@@ -9,11 +9,11 @@ struct ModInt(uint mod) {
     uint n;
 
     this(int n) {
-        this.n = (n % mod + mod) % mod;
+        this.n = to!uint((n % mod.to!int + mod.to!int) % mod);
     }
 
     this(long n) {
-        this.n = (n % mod + mod) % mod;
+        this.n = to!uint((n % mod.to!long + mod.to!long) % mod);
     }
 
     private this(uint n) {
@@ -39,32 +39,40 @@ struct ModInt(uint mod) {
         return ModInt(to!ulong(ret));
     }
 
-    ModInt opBinary(string op : "+")(ModInt rhs) const {
+    auto opBinary(string op : "+")(ModInt!mod rhs) const {
         return ModInt(normilize(n + rhs.n));
     }
 
-    ModInt opBinary(string op : "-")(ModInt rhs) const {
+    auto opBinary(string op : "-")(ModInt!mod rhs) const {
         return ModInt(normilize(n + mod - rhs.n));
     }
 
-    ModInt opBinary(string op : "*")(ModInt rhs) const {
+    auto opBinary(string op : "*")(ModInt!mod rhs) const {
         return ModInt(to!uint(to!long(n) * rhs.n % mod));
     }
 
-    ModInt opBinary(string op : "/")(ModInt rhs) const {
+    auto opBinary(string op : "/")(ModInt!mod rhs) const {
         return this * pow(rhs.n, mod-2);
     }
 
-    ModInt opBinary(string op : "^^")(ModInt rhs) const {
+    auto opBinary(string op : "^^")(ModInt!mod rhs) const {
         return pow(this.n, rhs.n);
     }
 
-    ModInt opBinary(string op, T)(T rhs) const {
-        ModInt mod_rhs = ModInt(rhs);
+    auto opBinary(string op, T)(T rhs) const {
+        auto mod_rhs = ModInt!mod(rhs);
         return opBinary!op(mod_rhs);
     }
 
-    ModInt opOpAssign(string op)(ModInt rhs) {
+    auto opOpAssign(string op)(ModInt!mod rhs) {
         return mixin ("this=this"~op~"rhs");
+    }
+
+    auto opEquals(ModInt!mod rhs) const {
+        return this.n == rhs.n;
+    }
+
+    auto opEquals(T)(T rhs) const {
+        return this == ModInt!mod(rhs);
     }
 }
